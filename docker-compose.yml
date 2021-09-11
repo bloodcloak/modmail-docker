@@ -1,0 +1,39 @@
+version: '3.3'
+services:
+    modmail:
+        container_name: modmail
+        build: ./modmail/
+        image: modmail
+        environment:
+          - TOKEN=${MODMAIL_TOKEN}
+          - LOG_URL=${LOG_URL}
+          - GUILD_ID=${MODMAIL_GUILD_ID}
+          - OWNERS=${MODMAIL_OWNERS}
+          - MONGO_URI=mongodb://mongo
+        depends_on: 
+          - mongo
+        networks:
+          - mynet
+
+    mongo:
+        container_name: mongo
+        image: mongo:latest
+        volumes:
+          - ./mongodb_data:/data/db
+        networks:
+          - mynet
+
+    logviewer:
+        container_name: logviewer
+        build: ./logviewer/
+        image: logviewer
+        environment:
+          - MONGO_URI=mongodb://mongo
+        ports:
+          - 8000:8000
+        networks:
+          - mynet
+
+networks:
+  mynet:
+    driver: bridge
